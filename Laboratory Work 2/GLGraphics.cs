@@ -36,7 +36,7 @@ namespace Laboratory_Work_2
                 64);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perspectiveMat);
-          
+            SetupLightning();
         }
         public void Update()
         {
@@ -52,7 +52,8 @@ namespace Laboratory_Work_2
             Render();
 
         }
-        private void drawTestQuad()
+
+        private void drawTextQuad()
         {
             GL.Begin(PrimitiveType.Quads);
             GL.Color3(Color.Blue);
@@ -65,16 +66,42 @@ namespace Laboratory_Work_2
             GL.Vertex3(1.0f, -1.0f, -1.0f);
             GL.End();
         }
+
+        private void drawTextureQuad()
+        {
+            GL.Enable(EnableCap.Texture2D);
+            GL.BindTexture(TextureTarget.Texture2D, texturesIDs[0]);
+            GL.Begin(PrimitiveType.Quads);
+            GL.Color3(Color.Blue);
+            GL.TexCoord2(0.0, 0.0);
+            GL.Vertex3(-1.0f, -1.0f, -1.0f);
+            GL.Color3(Color.Red);
+            GL.TexCoord2(0.0, 1.0);
+            GL.Vertex3(-1.0f, 1.0f, -1.0f);
+            GL.Color3(Color.White);
+            GL.TexCoord2(1.0, 1.0);
+            GL.Vertex3(1.0f, 1.0f, -1.0f);
+            GL.Color3(Color.Green);
+            GL.TexCoord2(1.0, 0.0);
+            GL.Vertex3(1.0f, -1.0f, -1.0f);
+            GL.End();
+            GL.Disable(EnableCap.Texture2D);
+
+        }
+
         public void Render()
         {
-            drawTestQuad();
+            drawTextureQuad();
             GL.PushMatrix();
             GL.Translate(1, 1, 1);
             GL.Rotate(rotateAngle, Vector3.UnitZ);
             GL.Scale(0.5f, 0.5f, 0.5f);
-            drawTestQuad();
+            drawTextQuad();
             GL.PopMatrix();
+            GL.Color3(Color.BlueViolet);
+            DrawSphere(1.0f, 20, 20);
         }
+
         public int LoadTexture(String filePath)
         {
             try
@@ -95,6 +122,48 @@ namespace Laboratory_Work_2
             catch (System.IO.FileNotFoundException е)
             {
                 return -1;
+            }
+        }
+
+        public void SetupLightning()
+        {
+            GL.Enable(EnableCap.Lighting);
+            GL.Enable(EnableCap.Light0);
+            GL.Enable(EnableCap.ColorMaterial);
+            Vector4 lightPosition = new Vector4(1.0f, 1.0f, 4.0f, 0.0f);
+            GL.Light(LightName.Light0, LightParameter.Position, lightPosition);
+            Vector4 ambientColor = new Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+            GL.Light(LightName.Light0, LightParameter.Ambient, ambientColor);
+            Vector4 diffuseColor = new Vector4(0.6f, 0.6f, 1.0f, 1.0f);
+            GL.Light(LightName.Light0, LightParameter.Diffuse, diffuseColor);
+            Vector4 materialSpecular = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+            GL.Material(MaterialFace.Front, MaterialParameter.Specular, materialSpecular);
+            float materialShininess = 100;
+            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, materialShininess);
+        }
+
+        private void DrawSphere(double r, int nx, int ny)
+        {
+            int ix, iy;
+            double x, y, z;
+            for (iy = 0; iy < ny; ++iy)
+            {
+                GL.Begin(BeginMode.QuadStrip);
+                for (ix = 0; ix <= nx; ++ix)
+                {
+                    x = r * Math.Sin(iy * Math.PI / ny) * Math.Cos(2 * ix * Math.PI / nx);
+                    y = r * Math.Sin(iy * Math.PI / ny) * Math.Sin(2 * ix * Math.PI / nx);
+                    z = r * Math.Cos(iy * Math.PI / ny);
+                    GL.Normal3(x, y, z);
+                    GL.Vertex3(x, y, z);
+
+                    x = r * Math.Sin((iy + 1) * Math.PI / ny) * Math.Cos(2 * ix * Math.PI / nx);
+                    y = r * Math.Sin((iy + 1) * Math.PI / ny) * Math.Sin(2 * ix * Math.PI / nx);
+                    z = r * Math.Cos((iy + 1) * Math.PI / ny);
+                    GL.Normal3(x, y, z);
+                    GL.Vertex3(x, y, z);
+                }
+                GL.End();
             }
         }
 

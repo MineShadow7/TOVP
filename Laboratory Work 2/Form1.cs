@@ -25,7 +25,7 @@ namespace Laboratory_Work_2
             int texID = GLGraphics.LoadTexture(
                 "C:\\Users\\T1620\\Desktop\\CGraphics\\OpenGL Project\\Laboratory Work 2\\Laboratory Work 2\\assets\\wood.jpg");
             GLGraphics.texturesIDs.Add(texID);
-            // TODO : Lab Work 2 - 6 Step.
+            
         }
         
 
